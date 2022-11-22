@@ -1,0 +1,39 @@
+{
+  "name": "apirypecorp",
+  "version": "1.0.0",
+  "description": "A Api Rype Corp é destinada a nova plataforma gammer da rype.gg, destinada a promover campeonatos entre outras funcionalidades para nosso mundo gammer.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./bin/server.js",
+    "dev": "nodemon ./bin/server.js",
+    "release": "standard-version"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/julianolanzi/APIRypeCorp.git"
+  },
+  "author": "JULIANO LANZI",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/julianolanzi/APIRypeCorp/issues"
+  },
+  "homepage": "https://github.com/julianolanzi/APIRypeCorp#readme",
+  "dependencies": {
+    "bin": "^0.0.0",
+    "body-parser": "^1.20.1",
+    "debug": "^4.3.4",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "http": "^0.0.1-security",
+    "jsonwebtoken": "^8.5.1",
+    "md5": "^2.3.0",
+    "mongoose": "^6.7.2",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "add": "^2.0.6",
+    "nodemon": "^2.0.20",
+    "standard-version": "^9.5.0"
+  }
+}
