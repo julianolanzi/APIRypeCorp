@@ -8,6 +8,7 @@ const path = require("path");
 const app = express();
 
 const indexRoute = require('./app/routes/index.routes');
+const usersRoute = require('./app/routes/users.routes');
 
 
 app.use(bodyParser.json({
@@ -29,5 +30,7 @@ app.use(function (req, res, next) {
 });
 
 app.use('/', indexRoute);
+app.use('/users', usersRoute);
+
 
 module.exports = app;
