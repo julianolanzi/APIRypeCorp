@@ -1,6 +1,6 @@
 
 const userService = require('../services/users/users.service');
-const ValidationContract = require("../validators/fluent-validador");
+const ValidationContract = require('../validators/fluent-validador');
 const emailService = require('../services/emails/email-service');
 
 exports.get = async (req, res, next) => {
@@ -12,10 +12,10 @@ exports.post = async (req, res, next) => {
     const { email, cpf } = req.body;
 
     let contract = new ValidationContract();
-    contract.hasMinLen(req.body.name, 4, "O nome requer pelo menos 8 caracteres");
-    contract.hasMinLen(req.body.cpf, 11, "O cpf requer pelo menos 11 caracteres");
-    contract.isEmail(req.body.email, "Email inválido");
-    contract.hasMinLen(req.body.password, 6, "A senha requerer no minimo 6 characters");
+    contract.hasMinLen(req.body.name, 4, 'O nome requer pelo menos 8 caracteres');
+    contract.hasMinLen(req.body.cpf, 11, 'O cpf requer pelo menos 11 caracteres');
+    contract.isEmail(req.body.email, 'Email inválido');
+    contract.hasMinLen(req.body.password, 6, 'A senha requerer no minimo 6 characters');
 
 
     const err = contract.errors();

@@ -1,4 +1,4 @@
-const Users = require("../../models/users/users");
+const Users = require('../../models/users/users');
 
 
 exports.create = async (data) => {
