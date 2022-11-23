@@ -1,7 +1,7 @@
 
 const userService = require('../services/users/users.service');
 const ValidationContract = require("../validators/fluent-validador");
-
+const emailService = require('../services/emails/email-service');
 
 exports.get = async (req, res, next) => {
     return res.status(200).send({ status: 'OK' });
@@ -31,8 +31,14 @@ exports.post = async (req, res, next) => {
             return res.status(400).send({ error: 'User already exists' });
         };
 
+
         const payload = req.body;
         const data = await userService.create(payload);
+
+        const message = emailService.registerMessage(payload);
+        console.log(message);
+        emailService.sendEmail(message);
+
         res.status(201).send({ data, message: 'registration successful' });
 
     } catch (error) {
