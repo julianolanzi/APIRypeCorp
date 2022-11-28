@@ -1,5 +1,5 @@
 const config = require('../../config/configs');
-const dotenv = require('dotenv')
+const dotenv = require('dotenv');
 const sendgrid = require('@sendgrid/mail');
 sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
 

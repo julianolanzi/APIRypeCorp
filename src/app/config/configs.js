@@ -5,5 +5,7 @@ module.exports = {
     TEMPLATE_ID: 'd-d091cde78aca4507bd31aaad3cf77efd',
     APP: 'http://localhost:3000',
     registerEmailId: 'd-8871a7a9e7184ab1b3538c24f4fa1d0d',
-    resertPassword: 'd-4a0d0004a7b749568f3be0368462aefc'
+    resertPassword: 'd-4a0d0004a7b749568f3be0368462aefc',
+    application: 'http://localhost:3000'
+
 }
