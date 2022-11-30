@@ -19,7 +19,7 @@ exports.post = async (req, res, next) => {
 
     let contract = new ValidationContract();
     contract.hasMinLen(req.body.name, 4, 'Name requires at least 8 characters');
-    contract.hasMinLen(req.body.cpf, 11, 'CPF requires at least 11 characters');
+    contract.hasMinLen(req.body.phone, 11, 'Phone requires at least 11 characters');
     contract.isEmail(req.body.email, 'Invalid email');
     contract.hasMinLen(req.body.password, 6, 'Password requires at least 6 characters');
 

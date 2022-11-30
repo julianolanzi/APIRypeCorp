@@ -32,6 +32,7 @@ exports.updateUser = async (id, data) => {
             name: data.name,
             lastname: data.lastname,
             cpf: data.cpf,
+            phone: data.phone,
             email: data.email,
             roles: data.roles,
         },

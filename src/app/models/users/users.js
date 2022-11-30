@@ -21,6 +21,10 @@ const UsersSchema = new mongoose.Schema({
     },
     cpf: {
         type: Number,
+        required: false,
+    },
+    phone: {
+        type: Number,
         required: true,
     },
     email: {
