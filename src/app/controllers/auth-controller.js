@@ -27,7 +27,6 @@ exports.login = async (req, res, next) => {
 
         res.status(200).send({
             user: {
-                roles: user.roles,
                 id: user.id,
                 email: user.email,
             },
