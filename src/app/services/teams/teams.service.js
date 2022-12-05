@@ -19,10 +19,20 @@ exports.getByUserAdminTeam = async (user) => {
     }
     return true;
 }
-exports.getByUserUserTeam = async (user) => {
+exports.getByUserTeam = async (user) => {
 
     var user = await Teams.find({
         members: user
+    });
+    if (user.length != 0) {
+        return false;
+    }
+    return true;
+}
+exports.getByAdminTeam = async (user) => {
+
+    var user = await Teams.find({
+        adminMembers: user
     });
     if (user.length != 0) {
         return false;
@@ -40,7 +50,6 @@ exports.updateInfoTeam = async (id, data) => {
     }, { new: true });
     return InfoTeam;
 }
-
 exports.getById = async (id) => {
     const team = await Teams.findById(id);
     return team;
@@ -49,7 +58,6 @@ exports.deleteTeam = async (id) => {
     const data = await Teams.findByIdAndDelete(id);
     return data;
 }
-
 exports.updateTeamMember = async (idTeam, UserID) => {
     console.log(idTeam , UserID);
     const team = await Teams.findOneAndUpdate(idTeam, {
@@ -59,11 +67,29 @@ exports.updateTeamMember = async (idTeam, UserID) => {
     },{ new: true });
     return team;
 }
+exports.updateAdminMember = async (idTeam, UserID) => {
+    console.log(idTeam , UserID);
+    const team = await Teams.findOneAndUpdate(idTeam, {
+        $push: {
+            adminMembers: [UserID]
+        }
+    },{ new: true });
+    return team;
+}
 exports.deleteTeamMember = async (idTeam, UserID) => {
     console.log(idTeam , UserID);
     const team = await Teams.findOneAndUpdate(idTeam, {
         $pull: {
             members: {$in: [UserID]}
+        }
+    }, { new: true });
+    return team;
+}
+exports.deleteTeamAdmin = async (idTeam, UserID) => {
+    console.log(idTeam , UserID);
+    const team = await Teams.findOneAndUpdate(idTeam, {
+        $pull: {
+            adminMembers: {$in: [UserID]}
         }
     }, { new: true });
     return team;

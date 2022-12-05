@@ -46,8 +46,11 @@ const TeamsSchema = new mongoose.Schema({
     members: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Users',
-    }
-    ],
+    }],
+    adminMembers: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Users',
+    }],
     createdAt: {
         type: Date,
         default: Date.now,
