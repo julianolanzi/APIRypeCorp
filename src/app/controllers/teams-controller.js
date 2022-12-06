@@ -1,68 +1,60 @@
 const teamService = require('../services/teams/teams.service');
 
 exports.get = async (req, res, next) => {
-
     try {
         const data = await teamService.get();
+        if(data.length == 0){
+            return res.status(400).send({ error: 'Nenhum time encontrado' });
+        }
         return res.status(200).send(data);
     } catch (error) {
-        return res.status(400).send({ error: 'Teams not found' });
+        return res.status(400).send({ error: 'Erro na chamada' });
     }
-
 }
 
 exports.post = async (req, res, next) => {
 
     try {
-
         const payload = req.body;
-
         const user = await teamService.getByUserAdminTeam(payload.admin);
 
         if (user == false) {
-            return res.status(400).send({ error: 'user already has admin Team' });
+            return res.status(400).send({ error: 'usúario já é admin de outro clan' });
         }
-
         const members = await teamService.getByUserTeam(payload.admin);
-
         if (members == false) {
-            return res.status(400).send({ error: 'user already has user Team' });
+            return res.status(400).send({ error: 'usúario já possui time' });
         }
-
         const data = await teamService.create(payload);
 
-        // const message = emailService.registerMessage(payload);
-        // emailService.sendEmail(message);
-
-        res.status(201).send({ data, message: 'registration Team successful' });
+        res.status(201).send({ data, message: 'Registro do time concluido com sucesso' });
 
     } catch (error) {
         console.log(error);
-        return res.status(400).send({ error: 'registration failed' });
+        return res.status(400).send({ error: 'registro de clan falhou verifique os erros e tente novamente' });
     }
 
 }
 
 exports.putInfoTeam = async (req, res, next) => {
     try {
-
         if (req.params.id.length < 24)
-            return res.status(404).send({ error: 'íd incorrect' });
+            return res.status(404).send({ error: 'íd incorreto' });
 
         const id = await teamService.getById(req.params.id);
 
         if (!id) {
-            return res.status(401).send({ error: 'Team invalid' });
+            return res.status(401).send({ error: 'Time Inválido' });
         };
 
         const data = await teamService.updateInfoTeam(req.params.id, req.body);
 
         res.status(201).send({
-            data, message: 'Update Team sucess'
+            data, message: 'Atualização realizada com sucesso'
         });
 
     } catch (error) {
-        return res.status(400).send({ error: 'Update Fail' });
+        return res.status(400).send({ error: 'Falha ao Atualizar' });
     }
 }
 
@@ -90,26 +82,26 @@ exports.updateMemberTeam = async (req, res, next) => {
         const idTeam = req.params.idTaem;
         const UserID = req.params.idMember;
 
-        const user = await teamService.getByUserAdminTeam(UserID);
-
-        if (user == false) {
-            return res.status(400).send({ error: 'user already has admin Team' });
+        const user = await teamService.getByAdminTeam(UserID);
+        console.log(user);
+        if (user == true) {
+            return res.status(400).send({ error: 'úsuario já é admin de um time' });
         }
 
         const member = await teamService.getByUserTeam(UserID);
 
         if (member == false) {
-            return res.status(400).send({ error: 'user already has user Team' });
+            return res.status(400).send({ error: 'úsuario já é membro de outro time' });
         }
 
         const data = await teamService.updateTeamMember(idTeam, UserID);
 
 
 
-        return res.status(200).send({ data, message: 'Team member update sucess' });
+        return res.status(200).send({ data, message: 'Membro atualizado com sucesso' });
     } catch (error) {
         console.log(error);
-        res.status(404).send({ error: 'Update team Members fail' });
+        res.status(404).send({ error: 'Atualização falhou' });
     }
 }
 exports.updateAdminTeam = async (req, res, next) => {
@@ -118,26 +110,26 @@ exports.updateAdminTeam = async (req, res, next) => {
         const idTeam = req.params.idTaem;
         const UserID = req.params.idMember;
 
-        const user = await teamService.getByUserAdminTeam(UserID);
+        const user = await teamService.getByAdminTeam(UserID);
 
-        if (user == false) {
-            return res.status(400).send({ error: 'user is already admin of another team' });
+        if (user == true) {
+            return res.status(400).send({ error: 'úsuario já é admin de outro time' });
         }
 
-        const member = await teamService.getByUserAdminTeam(UserID);
+        const member = await teamService.getByGroupAdminTeam(UserID);
 
         if (member == true) {
-            return res.status(400).send({ error: 'user already has user Team' });
+            return res.status(400).send({ error: 'úsuario já pertence a administração de outro time' });
         }
 
         const data = await teamService.updateAdminMember(idTeam, UserID);
 
 
 
-        return res.status(200).send({ data, message: 'admin team update sucess' });
+        return res.status(200).send({ data, message: 'admin atualizado com sucesso' });
     } catch (error) {
         console.log(error);
-        res.status(404).send({ error: 'Update team Members fail' });
+        res.status(404).send({ error: 'Falha na atualização de time' });
     }
 }
 
@@ -150,17 +142,17 @@ exports.deleteMemberTeam = async (req, res, next) => {
         const member = await teamService.getByUserTeam(UserID);
 
         if (member == true) {
-            return res.status(400).send({ error: 'User not found team' });
+            return res.status(400).send({ error: 'úsuario não encontrado' });
         }
 
         const data = await teamService.deleteTeamMember(idTeam, UserID);
 
 
 
-        return res.status(200).send({ data, message: 'Team member update sucess' });
+        return res.status(200).send({ data, message: 'Membro removido com sucesso' });
     } catch (error) {
         console.log(error);
-        res.status(404).send({ error: 'Update team Members fail' });
+        res.status(404).send({ error: 'atualização do time falhou' });
     }
 }
 exports.deleteAdminTeam = async (req, res, next) => {
@@ -172,16 +164,16 @@ exports.deleteAdminTeam = async (req, res, next) => {
         const member = await teamService.getByAdminTeam(UserID);
 
         if (member == true) {
-            return res.status(400).send({ error: 'User not found team' });
+            return res.status(400).send({ error: 'úsuario não encontrado' });
         }
 
         const data = await teamService.deleteTeamAdmin(idTeam, UserID);
 
 
 
-        return res.status(200).send({ data, message: 'Team member update sucess' });
+        return res.status(200).send({ data, message: 'Atualização realizada com sucesso' });
     } catch (error) {
         console.log(error);
-        res.status(404).send({ error: 'Update team Members fail' });
+        res.status(404).send({ error: 'falha na atualização' });
     }
 }

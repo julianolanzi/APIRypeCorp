@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const configs = require('../config/configs');
 const config = require('../config/configs');
+const teamService = require('../services/teams/teams.service');
 
 const dotenv = require('dotenv');
 
@@ -15,24 +16,24 @@ exports.generateToken = (params = {}) => {
 exports.verifyToken = (req, res, next) => {
 
     const authHeader = req.headers.authorization;
-    
+
     if (!authHeader)
-    return res.status(401).send({error: 'No token provided' });
+        return res.status(401).send({ error: 'No token provided' });
 
     const parts = authHeader.split(' ');
 
     if (!parts.length === 2)
-    return res.status(401).send({error: 'Token Error' });
+        return res.status(401).send({ error: 'Token Error' });
 
-    const [ scheme, token] = parts;
+    const [scheme, token] = parts;
 
     if (!/^Bearer$/i.test(scheme)) {
-        return res.status(401).send({error: 'Token malformatted' });
+        return res.status(401).send({ error: 'Token malformatted' });
     }
 
     jwt.verify(token, process.env.secret, (err, decoded) => {
         if (err)
-        return res.status(401).send({error: 'Token invalid' });
+            return res.status(401).send({ error: 'Token invalid' });
 
         req.userId = decoded.id;
 
@@ -66,33 +67,80 @@ exports.authorize = function (req, res, next) {
 exports.isAdmin = function (req, res, next) {
     var authHeader = req.headers.authorization;
     if (!authHeader)
-    return res.status(401).send({error: 'No token provided' });
+        return res.status(401).send({ error: 'No token provided' });
 
     const parts = authHeader.split(' ');
 
     if (!parts.length === 2)
-    return res.status(401).send({error: 'Token Error' });
+        return res.status(401).send({ error: 'Token Error' });
 
-    const [ scheme, token] = parts;
+    const [scheme, token] = parts;
 
     if (!/^Bearer$/i.test(scheme)) {
-        return res.status(401).send({error: 'Token malformatted' });
+        return res.status(401).send({ error: 'Token malformatted' });
     }
 
     jwt.verify(token, process.env.secret, (err, decoded) => {
         if (err)
-        return res.status(401).send({error: 'Token invalid' });
+            return res.status(401).send({ error: 'Token invalid' });
 
         const data = jwt.decode(token);
         let isAdmin = data.user.roles;
-        if(isAdmin == 'admin'){
+        if (isAdmin == 'admin') {
             return next();
-        }else {
+        } else {
             return res.status(403).json({
                 message: 'restric local only admins'
             });
         }
 
-       
+
     })
+};
+
+exports.isAdminTeam = function (req, res, next) {
+    var authHeader = req.headers.authorization;
+    if (!authHeader)
+        return res.status(401).send({ error: 'No token provided' });
+
+    const parts = authHeader.split(' ');
+
+    if (!parts.length === 2)
+        return res.status(401).send({ error: 'Token Error' });
+
+    const [scheme, token] = parts;
+
+    if (!/^Bearer$/i.test(scheme)) {
+        return res.status(401).send({ error: 'Token malformatted' });
+    }
+
+    jwt.verify(token, process.env.secret, async (err, decoded) => {
+        if (err)
+            return res.status(401).send({ error: 'Token invalid' });
+
+        const AdmTeam = req.body.admin;
+        const user = await teamService.getByAdminTeam(AdmTeam);
+        if (user == true) {
+            return next();
+        }
+        const data = jwt.decode(token);
+
+        const isAdminGroup = await teamService.getByGroupAdminTeam(data.id);
+        console.log(data.id);
+        if (isAdminGroup == true) {
+            return next();
+        }
+
+        let isAdmin = data.user.roles;
+        if (isAdmin == 'admin') {
+            return next();
+        } else {
+            return res.status(403).json({
+                message: 'Voce precisa ser admin do time para realizar mudanças'
+            });
+        }
+
+
+    })
+
 };
