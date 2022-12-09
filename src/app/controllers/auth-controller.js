@@ -33,6 +33,7 @@ exports.login = async (req, res, next) => {
             token: authMidleware.generateToken({ user, id: user.id })
         })
     } catch (error) {
+        console.log(error);
         res.status(400).send({ message: 'authentication failed' })
     }
 }
