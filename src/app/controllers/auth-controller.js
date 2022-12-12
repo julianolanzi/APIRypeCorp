@@ -14,8 +14,8 @@ exports.login = async (req, res, next) => {
 
         const user = await userService.login(email);
 
-        var errors1 = ['user not found'];
-        var errors2 = ['invalid password'];
+        var errors1 = ['Úsuario nao encontrado'];
+        var errors2 = ['Senha inválida'];
 
         if (!user)
             return res.status(400).send({ errors: errors1 });
@@ -34,7 +34,7 @@ exports.login = async (req, res, next) => {
         })
     } catch (error) {
         console.log(error);
-        res.status(400).send({ message: 'authentication failed' })
+        res.status(400).send({ message: 'Login falhou' })
     }
 }
 
@@ -46,7 +46,7 @@ exports.forgotPassword = async (req, res, next) => {
         const user = await userService.forgotPass({ email });
 
         if (!user)
-            return res.status(400).send({ error: 'user not found' });
+            return res.status(400).send({ error: 'Úsuario nao encontrado' });
 
         const token = crypto.randomBytes(40).toString('hex');
 
@@ -61,10 +61,10 @@ exports.forgotPassword = async (req, res, next) => {
         // console.log(message);
         // emailService.sendEmail(message);
 
-        return res.status(200).send({ url, token, email, message: 'Password change email sent successfully' });
+        return res.status(200).send({ url, token, email, message: 'Senha alterada com sucesso' });
 
     } catch (error) {
-        res.status(400).send({ error: 'Erro on forgot password, try again' })
+        res.status(400).send({ error: 'Erro ao trocar a senha tente novamente' })
     }
 }
 
@@ -76,24 +76,24 @@ exports.resetPassword = async (req, res, next) => {
 
         const user = await userService.resetPassword({ email });
         if (!user)
-            return res.status(400).send({ error: 'User not found' });
+            return res.status(400).send({ error: 'Úsuario nao encontrado' });
 
         if (token !== user.passwordResetToken)
-            return res.status(400).send({ error: 'Token invalid' })
+            return res.status(400).send({ error: 'Informações inválidas' })
 
         const now = new Date();
         if (now > user.passwordResetExpires)
-            return res.status(400).send({ error: 'Token expired generet a new one' })
+            return res.status(400).send({ error: 'Validação expirada' })
 
         user.password = password;
         
         await userService.updatePassword(user);
 
-        res.status(200).send({ date: now, message: ' Password update sucess ' });
+        res.status(200).send({ date: now, message: ' Senha alterada com sucesso ' });
 
     } catch (error) {
         console.log(error);
-        res.status(404).send({ error: 'Erro on forgot password, try again' })
+        res.status(404).send({ error: 'Erro ao trocar a senha tente novamente' })
     }
 
 
