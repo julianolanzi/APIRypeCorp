@@ -61,7 +61,7 @@ exports.forgotPassword = async (req, res, next) => {
         // console.log(message);
         // emailService.sendEmail(message);
 
-        return res.status(200).send({ url, message: 'Password change email sent successfully' });
+        return res.status(200).send({ url, token, email, message: 'Password change email sent successfully' });
 
     } catch (error) {
         res.status(400).send({ error: 'Erro on forgot password, try again' })
