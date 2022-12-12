@@ -46,7 +46,7 @@ exports.forgotPassword = async (req, res, next) => {
         const user = await userService.forgotPass({ email });
 
         if (!user)
-            return res.status(400).send({ message: 'user not found' });
+            return res.status(400).send({ error: 'user not found' });
 
         const token = crypto.randomBytes(40).toString('hex');
 
