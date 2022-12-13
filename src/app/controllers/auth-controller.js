@@ -15,14 +15,14 @@ exports.login = async (req, res, next) => {
 
         const user = await userService.login(email);
 
-        var errors1 = ['Úsuario nao encontrado'];
-        var errors2 = ['Senha inválida'];
+        var errors1 = 'Úsuario nao encontrado';
+        var errors2 = 'Senha inválida';
 
         if (!user)
-            return res.status(400).send({ errors: errors1 });
+            return res.status(400).send({ error: errors1 });
 
         if (!await bcrypt.compare(password, user.password))
-            return res.status(400).send({ errors: errors2 });
+            return res.status(400).send({ error: errors2 });
 
         user.password = undefined;
 
