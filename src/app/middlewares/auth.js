@@ -45,6 +45,10 @@ exports.decodeToken = async (token) => {
     var data = await jwt.verify(token, process.env.secret);
     return data;
 }
+exports.decodeResetPass = async (token) => {
+    var data = await jwt.verify(token);
+    return data;
+}
 
 exports.authorize = function (req, res, next) {
     var token = req.body.token || req.query.token || req.headers['x-access-token'];
