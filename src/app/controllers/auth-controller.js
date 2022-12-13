@@ -30,6 +30,7 @@ exports.login = async (req, res, next) => {
             user: {
                 id: user.id,
                 email: user.email,
+                nickname: user.nickname
             },
             token: authMidleware.generateToken({ user, id: user.id })
         })
@@ -100,7 +101,6 @@ exports.resetPassword = async (req, res, next) => {
         res.status(200).send({ date: now, message: ' Senha alterada com sucesso ' });
 
     } catch (error) {
-        console.log(error);
         res.status(404).send({ error: 'Erro ao trocar a senha tente novamente' })
     }
 }
