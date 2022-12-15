@@ -15,7 +15,7 @@ exports.login = async (req, res, next) => {
 
         const user = await userService.login(email);
 
-        var errors1 = 'Úsuario nao encontrado';
+        var errors1 = 'Usuário nao encontrado';
         var errors2 = 'Senha inválida';
 
         if (!user)
@@ -48,7 +48,7 @@ exports.forgotPassword = async (req, res, next) => {
         const user = await userService.forgotPass({ email });
 
         if (!user)
-            return res.status(400).send({ error: 'usuário nao encontrado' });
+            return res.status(400).send({ error: 'Usuário nao encontrado' });
 
         const token = crypto.randomBytes(40).toString('hex');
 
@@ -85,7 +85,7 @@ exports.resetPassword = async (req, res, next) => {
 
         const user = await userService.resetPassword({ email });
         if (!user)
-            return res.status(400).send({ error: 'usuário nao encontrado' });
+            return res.status(400).send({ error: 'Usuário nao encontrado' });
 
         if (tooken !== user.passwordResetToken)
             return res.status(400).send({ error: 'Informações inválidas' })

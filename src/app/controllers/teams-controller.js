@@ -142,7 +142,7 @@ exports.deleteMemberTeam = async (req, res, next) => {
         const member = await teamService.getByUserTeam(UserID);
 
         if (member == true) {
-            return res.status(400).send({ error: 'úsuario não encontrado' });
+            return res.status(400).send({ error: 'Usuário nao encontrado' });
         }
 
         const data = await teamService.deleteTeamMember(idTeam, UserID);
