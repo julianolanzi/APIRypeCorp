@@ -30,7 +30,8 @@ exports.login = async (req, res, next) => {
             user: {
                 id: user.id,
                 email: user.email,
-                nickname: user.nickname
+                nickname: user.nickname,
+                url: user.url
             },
             token: authMidleware.generateToken({ user, id: user.id })
         })
