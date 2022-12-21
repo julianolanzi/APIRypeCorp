@@ -5,8 +5,9 @@ const middlewares = require('../middlewares/auth');
 
 router.get('/', middlewares.isAdmin, controller.get);
 router.post('/', controller.post);
-router.get('/:id', middlewares.verifyToken, controller.getById);
-router.put('/:id', middlewares.verifyToken, controller.put);
-router.delete('/:id', middlewares.verifyToken, controller.delete);
+router.get('/:id', middlewares.isAdmin, controller.getById);
+router.put('/:id', middlewares.isAdmin, controller.put);
+router.put('/updatepass/:id', middlewares.isAdmin, controller.UpdatePassword);
+router.delete('/:id', middlewares.isAdmin, controller.delete);
 
 module.exports = router;

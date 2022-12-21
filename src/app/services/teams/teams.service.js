@@ -1,4 +1,6 @@
 const Teams = require('../../models/teams/teams');
+const Users = require('../../models/users/users');
+
 
 exports.get = async () => {
     const data = await Teams.find().populate(['admin', 'members']);
@@ -44,6 +46,15 @@ exports.getByUserTeam = async (user) => {
 exports.create = async (data) => {
     var team = new Teams(data);
     await team.save();
+
+    console.log(team);
+
+    var user = await Users.findOneAndUpdate(data.admin, {
+        $push: {
+            team: team._id
+        }
+    },{ new: true });
+    
     return team;
 };
 

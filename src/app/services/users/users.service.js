@@ -1,5 +1,5 @@
 const Users = require('../../models/users/users');
-
+const bcrypt = require('bcryptjs');
 
 exports.create = async (data) => {
     var user = new Users(data);
@@ -21,7 +21,9 @@ exports.get = async () => {
 };
 
 exports.getByid = async (id) => {
-    const user = await Users.findById(id);
+    const user = await Users.findById(id).populate(['team']);
+
+
     return user;
 };
 
@@ -35,6 +37,7 @@ exports.updateUser = async (id, data) => {
             phone: data.phone,
             email: data.email,
             roles: data.roles,
+            verify: data.verify,
         },
     }, { new: true });
     return user;
@@ -45,3 +48,18 @@ exports.deleteUser = async (id) => {
 
     return user;
 }
+
+exports.updatePass = async (id, data) => {
+    const password = await bcrypt.hash(data.newpassword, 15);
+    const user = await Users.findByIdAndUpdate(id, {
+        '$set': {
+            password: password,
+        },
+    }, { new: true });
+    return user;
+}
+
+exports.checkUpdatePass = async (email) => {
+    const user = await Users.findOne({ email }).select('+password');
+    return user;
+};

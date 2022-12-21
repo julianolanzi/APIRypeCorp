@@ -2,6 +2,7 @@
 const userService = require('../services/users/users.service');
 const ValidationContract = require('../validators/fluent-validador');
 const emailService = require('../services/emails/email-service');
+const bcrypt = require('bcryptjs');
 
 exports.get = async (req, res, next) => {
     try {
@@ -54,8 +55,9 @@ exports.post = async (req, res, next) => {
 
 exports.getById = async (req, res, next) => {
     try {
-        var data = await userService.getByid(req.params.id);
-        res.status(200).send(data);
+        var user = await userService.getByid(req.params.id);
+        
+        res.status(200).send(user);
 
     } catch (error) {
         res.status(400).send({ error: 'Usuário nao encontrado' });
@@ -84,6 +86,41 @@ exports.put = async (req, res, next) => {
             message: { user, message: 'Atualização realizada com sucesso' }
         });
     } catch (error) {
+        res.status(404).send({ error: 'Autenticação falhou' });
+    }
+}
+
+exports.UpdatePassword = async (req, res, next) => {
+
+    try {
+        const data = req.body;
+
+        const user = await userService.checkUpdatePass(data.email);
+        var errors2 = 'Senha inválida';
+
+        if (!await bcrypt.compare(data.password, user.password))
+            return res.status(400).send({ error: errors2 });
+
+        if (req.params.id.length < 24)
+            return res.status(404).send({ error: 'Id incorreto' });
+
+        const id = await userService.getByid(req.params.id);
+
+        if (!id) {
+            return res.status(401).send({ error: 'Usuário inválido' });
+        };
+
+        if(data.newpassword != data.confirmpassword){
+            return res.status(400).send({ error: 'As senhas são diferentes' });
+        }
+
+        const test = await userService.updatePass(req.params.id, data);
+
+        res.status(201).send({
+            message: { message: 'Atualização realizada com sucesso' }
+        });
+    } catch (error) {
+        console.log(error);
         res.status(404).send({ error: 'Autenticação falhou' });
     }
 }

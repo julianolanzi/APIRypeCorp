@@ -15,15 +15,15 @@ const UsersSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    lastname:{
+    lastname: {
         type: String,
         required: false,
     },
-    country:{
+    country: {
         type: String,
         required: false,
     },
-    gender:{
+    gender: {
         type: String,
         required: false,
     },
@@ -38,6 +38,10 @@ const UsersSchema = new mongoose.Schema({
     birthday: {
         type: Date,
         required: true,
+    },
+    verify: {
+        type: Boolean,
+        required: false,
     },
     email: {
         type: String,
@@ -59,7 +63,7 @@ const UsersSchema = new mongoose.Schema({
         required: true,
         default: true,
     },
-    profileImage:{
+    profileImage: {
         type: String,
         require: false,
     },
@@ -75,6 +79,10 @@ const UsersSchema = new mongoose.Schema({
         type: String,
         required: false
     },
+    team: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Teams',
+    }],
     passwordResetToken: {
         type: String,
         select: false,

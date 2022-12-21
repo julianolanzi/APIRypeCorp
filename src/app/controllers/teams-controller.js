@@ -16,9 +16,9 @@ exports.post = async (req, res, next) => {
 
     try {
         const payload = req.body;
-        const user = await teamService.getByUserAdminTeam(payload.admin);
+        const user = await teamService.getByAdminTeam(payload.admin);
 
-        if (user == false) {
+        if (user == true) {
             return res.status(400).send({ error: 'usúario já é admin de outro clan' });
         }
         const members = await teamService.getByUserTeam(payload.admin);
