@@ -36,6 +36,7 @@ exports.updateUser = async (id, data) => {
             cpf: data.cpf,
             phone: data.phone,
             email: data.email,
+            birthday: data.birthday,
             roles: data.roles,
             verify: data.verify,
         },
