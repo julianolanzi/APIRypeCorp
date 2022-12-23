@@ -9,9 +9,10 @@ const firebase = admin.initializeApp({
 
 
 
+
 exports.deleteImg = async (file) => {
 
-    
+
     const teste = await firebase.storage().bucket(bucket).file(file).delete();
 
     // const bucket = firebase.storage().bucket();
