@@ -3,6 +3,11 @@ const userService = require('../services/users/users.service');
 const ValidationContract = require('../validators/fluent-validador');
 const emailService = require('../services/emails/email-service');
 const bcrypt = require('bcryptjs');
+const FirebaseStorage = require('multer-firebase-storage')
+const dotenv = require('dotenv');
+const config = require('../config/configs')
+
+const imgService = require('../services/imgs/img.service');
 
 exports.get = async (req, res, next) => {
     try {
@@ -56,7 +61,7 @@ exports.post = async (req, res, next) => {
 exports.getById = async (req, res, next) => {
     try {
         var user = await userService.getByid(req.params.id);
-        
+
         res.status(200).send(user);
 
     } catch (error) {
@@ -90,7 +95,7 @@ exports.put = async (req, res, next) => {
     }
 }
 
-exports.UpdatePassword = async (req, res, next) => {
+exports.updatePassword = async (req, res, next) => {
 
     try {
         const data = req.body;
@@ -110,7 +115,7 @@ exports.UpdatePassword = async (req, res, next) => {
             return res.status(401).send({ error: 'Usuário inválido' });
         };
 
-        if(data.newpassword != data.confirmpassword){
+        if (data.newpassword != data.confirmpassword) {
             return res.status(400).send({ error: 'As senhas são diferentes' });
         }
 
@@ -140,5 +145,38 @@ exports.delete = async (req, res, next) => {
         return res.status(200).send({ message: 'Usuário deletado com sucesso' });
     } catch (error) {
         res.status(404).send({ error: 'Falha ao deleter usuário' });
+    }
+}
+
+exports.postImg = async (req, res, next) => {
+    try {
+
+        const file = req.file;
+
+        let URL = `https://storage.googleapis.com/rypeapp.appspot.com/${file.fileRef.name}`
+
+        console.log(URL);
+
+        return res.status(200).send(file);
+    } catch (error) {
+        return res.status(401).send(error);
+    }
+}
+
+exports.deleteImg = async (req, res, next) => {
+    try {
+        user = req.params.id;
+
+       
+        file = 'juliano1853f92819f.JPG'
+        const img = await imgService.deleteImg(file);
+
+        
+        console.log(img);
+
+        return res.status(200).send(img);
+    } catch (error) {
+        console.log(error);
+        return res.status(401).send(error);
     }
 }

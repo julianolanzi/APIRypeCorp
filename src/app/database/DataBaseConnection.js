@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
-const config = require('../config/configs')
+const configs = require('../config/configs')
 
 mongoose.connect(
-    config.CONNECTIONDATABASE,
+    configs.DATABASE,
     {
         useNewUrlParser: true,
         useUnifiedTopology: true,

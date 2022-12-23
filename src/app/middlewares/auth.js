@@ -1,13 +1,13 @@
 const jwt = require('jsonwebtoken');
 const configs = require('../config/configs');
-const config = require('../config/configs');
+
 const teamService = require('../services/teams/teams.service');
 
-const dotenv = require('dotenv');
+
 
 
 exports.generateToken = (params = {}) => {
-    const token = jwt.sign(params, process.env.secret, {
+    const token = jwt.sign(params, configs.SECRET, {
         expiresIn: 86400,
     })
     return token;
@@ -31,7 +31,7 @@ exports.verifyToken = (req, res, next) => {
         return res.status(401).send({ error: 'Token malformatted' });
     }
 
-    jwt.verify(token, process.env.secret, (err, decoded) => {
+    jwt.verify(token, configs.SECRET, (err, decoded) => {
         if (err)
             return res.status(401).send({ error: 'Token invalid' });
 
@@ -42,7 +42,7 @@ exports.verifyToken = (req, res, next) => {
 };
 
 exports.decodeToken = async (token) => {
-    var data = await jwt.verify(token, process.env.secret);
+    var data = await jwt.verify(token, process.env.SECRET);
     return data;
 }
 
@@ -52,7 +52,7 @@ exports.authorize = function (req, res, next) {
     if (!token) {
         res.status(401).json({ message: 'Restrict Acess' });
     } else {
-        jwt.verify(token, config.SALT_KEY, function (error, decoded) {
+        jwt.verify(token, configs.SECRET, function (error, decoded) {
             if (error) {
                 res.status(401).json({ messagem: 'Token invalid' });
             } else {
@@ -80,7 +80,7 @@ exports.isAdmin = function (req, res, next) {
         return res.status(401).send({ error: 'Token malformatted' });
     }
 
-    jwt.verify(token, process.env.secret, (err, decoded) => {
+    jwt.verify(token, configs.SECRET, (err, decoded) => {
         if (err)
             return res.status(401).send({ error: 'Token invalid' });
 
@@ -114,7 +114,7 @@ exports.isAdminTeam = function (req, res, next) {
         return res.status(401).send({ error: 'Token malformatted' });
     }
 
-    jwt.verify(token, process.env.secret, async (err, decoded) => {
+    jwt.verify(token, configs.SECRET, async (err, decoded) => {
         if (err)
             return res.status(401).send({ error: 'Token invalid' });
 

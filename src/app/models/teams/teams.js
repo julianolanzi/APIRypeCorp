@@ -1,5 +1,4 @@
 const mongoose = require('../../database/DataBaseConnection');
-const bcrypt = require('bcryptjs');
 
 const TeamsSchema = new mongoose.Schema({
     teamName: {

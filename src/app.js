@@ -5,7 +5,6 @@ const morgan = require('morgan');
 const path = require('path');
 const cors = require('cors');
 
-
 const app = express();
 
 const indexRoute = require('./app/routes/index.routes');
@@ -30,6 +29,7 @@ app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, DELETE');
     next();
 });
+
 
 app.use('/', indexRoute);
 app.use('/users', usersRoute);

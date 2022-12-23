@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/teams-controller');
 const middlewares = require('../middlewares/auth');
+
+const controller = require('../controllers/teams-controller');
+
 
 router.get('/', middlewares.verifyToken, controller.get);
 

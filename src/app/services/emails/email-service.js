@@ -1,7 +1,6 @@
-const config = require('../../config/configs');
-const dotenv = require('dotenv');
+const configs = require('../../config/configs');
 const sendgrid = require('@sendgrid/mail');
-sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
+sendgrid.setApiKey(configs.SENDGRID.SENDGRID_API_KEY);
 
 exports.registerMessage = (user) => {
     return {
