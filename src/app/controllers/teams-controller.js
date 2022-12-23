@@ -1,4 +1,5 @@
 const teamService = require('../services/teams/teams.service');
+const imgService = require('../services/imgs/img.service');
 
 exports.get = async (req, res, next) => {
     try {
@@ -65,12 +66,15 @@ exports.delete = async (req, res, next) => {
         const team = await teamService.getById(id);
 
         if (!team) {
-            return res.status(400).send({ error: 'Team not found' });
+            return res.status(400).send({ error: 'Time não encontrado' });
+        }
+        if(team.profileImage.length > 0){
+            await imgService.deleteImg(team.profileImage);
         }
 
         const data = await teamService.deleteTeam(id);
 
-        return res.status(200).send({ message: 'Team deleted sucess' });
+        return res.status(200).send({ message: 'Time deletado com sucesso' });
     } catch (error) {
         res.status(404).send({ error: 'Team not deleted' });
     }
@@ -175,5 +179,58 @@ exports.deleteAdminTeam = async (req, res, next) => {
     } catch (error) {
         console.log(error);
         res.status(404).send({ error: 'falha na atualização' });
+    }
+}
+
+exports.postTeamImg = async (req, res, next) => {
+    try {
+
+        const file = req.file;
+        const id = req.params.id;
+        const imgName = file.fileRef.name;
+
+        const team = await teamService.getById(id);
+        
+        if(!team){
+            await imgService.deleteImg(file.fileRef.name);
+            return res.status(401).send({error: 'Time não encontrado'});
+        }
+
+        if(team.profileImage.length > 0){
+            let imgfile = team.profileImage;
+
+            await imgService.deleteImg(imgfile);
+        }
+
+        let URL = `https://storage.googleapis.com/rypeapp.appspot.com/${imgName}`
+
+        const data = await teamService.postImg(id, URL, imgName);
+
+        return res.status(200).send(data);
+    } catch (error) {
+        console.log(error);
+        return res.status(401).send({error: error});
+    }
+}
+
+exports.deleteTeamImg = async (req, res, next) => {
+    try {
+        id = req.params.id;
+
+        const team = await teamService.getById(id);
+
+        if(team.profileImage.length > 0){
+            const img = await imgService.deleteImg(team.profileImage);
+
+            const data = await teamService.deleteImg(id);
+
+          return res.status(200).send({data: 'Foto apagada com sucesso.'});
+        }else{
+            return res.status(400).send({data: 'Usuário não possui foto cadastrada'});
+        }
+
+        return res.status(200).send({data: 'Foto apagada com sucesso.'});
+    } catch (error) {
+        return res.status(401).send({error: error});
     }
 }

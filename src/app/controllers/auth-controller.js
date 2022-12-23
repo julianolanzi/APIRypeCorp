@@ -3,7 +3,6 @@ const userService = require('../services/auth/auth.service');
 const authMidleware = require('../middlewares/auth');
 const bcrypt = require('bcryptjs/dist/bcrypt');
 const crypto = require('crypto');
-const config = require('../config/configs');
 const dotenv = require('dotenv');
 
 

@@ -26,17 +26,13 @@ const TeamsSchema = new mongoose.Schema({
         type: String,
         require: false,
     },
-    size: {
-        type: Number,
-        required: false
-    },
-    key: {
-        type: String,
-        required: false
-    },
     url: {
         type: String,
         required: false
+    },
+    profileImage: {
+        type: String,
+        require: false,
     },
     showImage: {
         type: Boolean,

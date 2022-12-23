@@ -44,10 +44,13 @@ exports.getByUserTeam = async (user) => {
 
 
 exports.create = async (data) => {
+    data = {
+        ...data,
+        url: '',
+        profileImage: '',
+    }
     var team = new Teams(data);
     await team.save();
-
-    console.log(team);
 
     var user = await Users.findOneAndUpdate(data.admin, {
         $push: {
@@ -106,6 +109,30 @@ exports.deleteTeamAdmin = async (idTeam, UserID) => {
             adminMembers: {$in: [UserID]}
         }
     }, { new: true });
+    return team;
+}
+
+exports.postImg = async (id, URL, imgName) => {
+
+    const team = await Teams.findByIdAndUpdate(id, {
+        '$set': {
+            profileImage: imgName,
+            url: URL,
+        },
+    }, { new: true });
+
+    return team;
+}
+exports.deleteImg = async (id) => {
+    profileImage = '';
+    url= '';
+    const team = await Teams.findOneAndUpdate(id, {
+        $set: {
+            profileImage,
+            url,
+        },
+    }, { new: true });
+
     return team;
 }
 

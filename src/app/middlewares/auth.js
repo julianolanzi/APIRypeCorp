@@ -4,8 +4,6 @@ const configs = require('../config/configs');
 const teamService = require('../services/teams/teams.service');
 
 
-
-
 exports.generateToken = (params = {}) => {
     const token = jwt.sign(params, configs.SECRET, {
         expiresIn: 86400,
@@ -46,23 +44,7 @@ exports.decodeToken = async (token) => {
     return data;
 }
 
-exports.authorize = function (req, res, next) {
-    var token = req.body.token || req.query.token || req.headers['x-access-token'];
 
-    if (!token) {
-        res.status(401).json({ message: 'Restrict Acess' });
-    } else {
-        jwt.verify(token, configs.SECRET, function (error, decoded) {
-            if (error) {
-                res.status(401).json({ messagem: 'Token invalid' });
-            } else {
-                next();
-            }
-        });
-
-
-    }
-};
 
 exports.isAdmin = function (req, res, next) {
     var authHeader = req.headers.authorization;
@@ -90,7 +72,7 @@ exports.isAdmin = function (req, res, next) {
             return next();
         } else {
             return res.status(403).json({
-                message: 'restric local only admins'
+                message: 'Essa ação só pode ser feita por um admin'
             });
         }
 

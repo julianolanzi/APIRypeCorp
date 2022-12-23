@@ -2,6 +2,12 @@ const Users = require('../../models/users/users');
 const bcrypt = require('bcryptjs');
 
 exports.create = async (data) => {
+
+    data = {
+        ...data,
+        url: '',
+        profileImage: '',
+    }
     var user = new Users(data);
     await user.save();
     return user;

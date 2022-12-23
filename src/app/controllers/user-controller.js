@@ -3,9 +3,6 @@ const userService = require('../services/users/users.service');
 const ValidationContract = require('../validators/fluent-validador');
 const emailService = require('../services/emails/email-service');
 const bcrypt = require('bcryptjs');
-const FirebaseStorage = require('multer-firebase-storage')
-const dotenv = require('dotenv');
-const config = require('../config/configs')
 
 const imgService = require('../services/imgs/img.service');
 
@@ -139,6 +136,9 @@ exports.delete = async (req, res, next) => {
         if (!user) {
             return res.status(400).send({ error: 'Usuário nao encontrado' });
         }
+        if(user.profileImage.length > 0){
+            const img = await imgService.deleteImg(user.profileImage);
+        }
 
         const data = await userService.deleteUser(id);
 
@@ -158,11 +158,18 @@ exports.postImg = async (req, res, next) => {
 
         const user = await userService.getByid(id);
 
+        if(!user){
+            await imgService.deleteImg(file.fileRef.name);
+            return res.status(401).send({error: 'Usuário não encontrado'});
+        }
+
         if (user.profileImage.length > 0) {
+            
             let imgfile = user.profileImage;
 
             await imgService.deleteImg(imgfile);
         }
+        
 
         let URL = `https://storage.googleapis.com/rypeapp.appspot.com/${imgName}`
 
@@ -181,6 +188,10 @@ exports.deleteImg = async (req, res, next) => {
         id = req.params.id;
 
         const user = await userService.getByid(id);
+
+        if(!user){
+            return res.status(401).send({error: 'Usuário não encontrado'});
+        }
 
         if(user.profileImage.length > 0){
             const img = await imgService.deleteImg(user.profileImage);
