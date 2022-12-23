@@ -4,7 +4,7 @@ const FirebaseStorage = require('multer-firebase-storage')
 const path = require('path');
 const crypto = require("crypto");
 
-const configs = require('../config/configs')
+const configs = require('./configs')
 
 
 const storageTypes = {
@@ -29,11 +29,9 @@ const storageTypes = {
             privateKey: configs.FIREBASE.private_key,
             projectId: configs.FIREBASE.project_id,
         },
+        directoryPath: 'users',
         public: true,
         unique: true,
-       
-       
-
 
     })
 
@@ -59,6 +57,6 @@ module.exports = {
             cb(new Error("Invalid file type."));
         }
     },
-  
+
 
 };

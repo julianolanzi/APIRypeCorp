@@ -21,9 +21,10 @@ exports.get = async () => {
 };
 
 exports.getByid = async (id) => {
+ 
     const user = await Users.findById(id).populate(['team']);
 
-
+    
     return user;
 };
 
@@ -64,3 +65,28 @@ exports.checkUpdatePass = async (email) => {
     const user = await Users.findOne({ email }).select('+password');
     return user;
 };
+
+exports.postImg = async (id, URL, imgName) => {
+
+    const user = await Users.findByIdAndUpdate(id, {
+        '$set': {
+            profileImage: imgName,
+            url: URL,
+        },
+    }, { new: true });
+
+    return user;
+}
+
+exports.deleteImg = async (id) => {
+    profileImage = '';
+    url= '';
+    const user = await Users.findOneAndUpdate(id, {
+        $set: {
+            profileImage,
+            url,
+        },
+    }, { new: true });
+
+    return user;
+}

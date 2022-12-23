@@ -151,32 +151,49 @@ exports.delete = async (req, res, next) => {
 exports.postImg = async (req, res, next) => {
     try {
 
+
         const file = req.file;
+        const id = req.params.id;
+        const imgName = file.fileRef.name;
 
-        let URL = `https://storage.googleapis.com/rypeapp.appspot.com/${file.fileRef.name}`
+        const user = await userService.getByid(id);
 
-        console.log(URL);
+        if (user.profileImage.length > 0) {
+            let imgfile = user.profileImage;
 
-        return res.status(200).send(file);
+            await imgService.deleteImg(imgfile);
+        }
+
+        let URL = `https://storage.googleapis.com/rypeapp.appspot.com/${imgName}`
+
+        const data = await userService.postImg(id, URL, imgName);
+
+        return res.status(200).send(data);
+
     } catch (error) {
+        console.log(error);
         return res.status(401).send(error);
     }
 }
 
 exports.deleteImg = async (req, res, next) => {
     try {
-        user = req.params.id;
+        id = req.params.id;
 
-       
-        file = 'juliano1853f92819f.JPG'
-        const img = await imgService.deleteImg(file);
+        const user = await userService.getByid(id);
 
+        if(user.profileImage.length > 0){
+            const img = await imgService.deleteImg(user.profileImage);
+
+            const data = await userService.deleteImg(id);
+
+          return res.status(200).send({data: 'Foto apagada com sucesso.'});
+        }else{
+            return res.status(400).send({data: 'Usuário não possui foto cadastrada'});
+        }
+      
         
-        console.log(img);
-
-        return res.status(200).send(img);
     } catch (error) {
-        console.log(error);
-        return res.status(401).send(error);
+        return res.status(401).send({error: error});
     }
 }

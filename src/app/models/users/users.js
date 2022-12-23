@@ -67,14 +67,6 @@ const UsersSchema = new mongoose.Schema({
         type: String,
         require: false,
     },
-    size: {
-        type: Number,
-        required: false
-    },
-    key: {
-        type: String,
-        required: false
-    },
     url: {
         type: String,
         required: false

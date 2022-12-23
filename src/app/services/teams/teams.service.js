@@ -76,7 +76,6 @@ exports.deleteTeam = async (id) => {
     return data;
 }
 exports.updateTeamMember = async (idTeam, UserID) => {
-    console.log(idTeam , UserID);
     const team = await Teams.findOneAndUpdate(idTeam, {
         $push: {
             members: [UserID]
