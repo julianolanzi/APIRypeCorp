@@ -30,12 +30,12 @@ exports.login = async (req, res, next) => {
                 id: user.id,
                 email: user.email,
                 nickname: user.nickname,
-                url: user.url
+                url: user.url,
+                team: user.team,
             },
             token: authMidleware.generateToken({ user, id: user.id })
         })
     } catch (error) {
-        console.log(error);
         res.status(400).send({ message: 'Login falhou' })
     }
 }

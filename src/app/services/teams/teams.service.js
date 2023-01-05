@@ -7,8 +7,51 @@ exports.get = async () => {
     return data;
 };
 exports.getById = async (id) => {
-    const team = await Teams.findById(id);
+
+    const team = await Teams.findById(id).populate(['admin', 'members', 'adminMembers', 'lines']);
     return team;
+}
+exports.getByUserId = async (id) => {
+
+    const adminUser = await Teams.find({
+        admin: id
+    });
+
+    if (adminUser.length > 0) {
+        let data = {
+            id: adminUser[0].id,
+            role: 'admin'
+        }
+
+        return data;
+    }
+
+    const member = await Teams.find({
+        members: id
+    })
+
+    if (member.length > 0) {
+        let data = {
+            id: member[0].id,
+            role: 'member'
+        }
+
+        return data;
+    }
+
+
+    const memberAdmin = await Teams.find({
+        adminMembers: id
+    })
+
+    if (memberAdmin.length > 0) {
+        let data = {
+            id: memberAdmin[0].id,
+            role: 'sub-admin'
+        }
+        return data;
+    }
+
 }
 exports.getByAdminTeam = async (user) => {
 
@@ -24,13 +67,11 @@ exports.getByGroupAdminTeam = async (user) => {
     var user = await Teams.find({
         adminMembers: user
     });
-    console.log(user);
     if (user.length != 0) {
         return true;
     }
     return false;
 }
-
 exports.getByUserTeam = async (user) => {
 
     var user = await Teams.find({
@@ -41,12 +82,24 @@ exports.getByUserTeam = async (user) => {
     }
     return true;
 }
+exports.getSearchkey = async (key) => {
 
-
+    let data = await Teams.find({
+        $or: [
+            { tagName: { $regex: key } },
+            { name: { $regex: key } }
+        ]
+    }).populate(['admin']);
+    if (data.length < 0) {
+        let message = 'nenhum time encontrado'
+        return message;
+    }
+    return data;
+}
 exports.create = async (data) => {
     data = {
         ...data,
-        url: '',
+        url: data.url,
         profileImage: '',
     }
     var team = new Teams(data);
@@ -56,11 +109,10 @@ exports.create = async (data) => {
         $push: {
             team: team._id
         }
-    },{ new: true });
-    
+    }, { new: true });
+
     return team;
 };
-
 exports.updateInfoTeam = async (id, data) => {
     const InfoTeam = await Teams.findByIdAndUpdate(id, {
         '$set': {
@@ -72,8 +124,6 @@ exports.updateInfoTeam = async (id, data) => {
     }, { new: true });
     return InfoTeam;
 }
-
-
 exports.deleteTeam = async (id) => {
     const data = await Teams.findByIdAndDelete(id);
     return data;
@@ -83,7 +133,7 @@ exports.updateTeamMember = async (idTeam, UserID) => {
         $push: {
             members: [UserID]
         }
-    },{ new: true });
+    }, { new: true });
     return team;
 }
 exports.updateAdminMember = async (idTeam, UserID) => {
@@ -91,27 +141,25 @@ exports.updateAdminMember = async (idTeam, UserID) => {
         $push: {
             adminMembers: [UserID]
         }
-    },{ new: true });
+    }, { new: true });
     return team;
 }
 exports.deleteTeamMember = async (idTeam, UserID) => {
     const team = await Teams.findOneAndUpdate(idTeam, {
         $pull: {
-            members: {$in: [UserID]}
+            members: { $in: [UserID] }
         }
     }, { new: true });
     return team;
 }
 exports.deleteTeamAdmin = async (idTeam, UserID) => {
-    console.log(idTeam , UserID);
     const team = await Teams.findOneAndUpdate(idTeam, {
         $pull: {
-            adminMembers: {$in: [UserID]}
+            adminMembers: { $in: [UserID] }
         }
     }, { new: true });
     return team;
 }
-
 exports.postImg = async (id, URL, imgName) => {
 
     const team = await Teams.findByIdAndUpdate(id, {
@@ -125,7 +173,7 @@ exports.postImg = async (id, URL, imgName) => {
 }
 exports.deleteImg = async (id) => {
     profileImage = '';
-    url= '';
+    url = '';
     const team = await Teams.findOneAndUpdate(id, {
         $set: {
             profileImage,
@@ -134,5 +182,32 @@ exports.deleteImg = async (id) => {
     }, { new: true });
 
     return team;
+}
+exports.updateTeamUser = async (id, team) => {
+
+    const user = await Users.findById(id);
+
+    if (user.team.length == 0) {
+        const data = await Users.findByIdAndUpdate(id, {
+            $push: {
+                team: [team]
+            }
+        }, { new: true });
+
+        return data;
+    } else {
+        return { error: 'Usuário já possui um time' }
+    }
+
+}
+exports.quitTeamMember = async (id, team) => {
+    console.log(id, team);
+    const data = await Users.findByIdAndUpdate(id, {
+        $pull: {
+            team: { $in: [team] }
+        }
+    }, { new: true });
+
+    return data;
 }
 

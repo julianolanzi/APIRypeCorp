@@ -42,6 +42,7 @@ exports.post = async (req, res, next) => {
 
 
         const payload = req.body;
+        console.log(payload);
         const data = await userService.create(payload);
 
         // const message = emailService.registerMessage(payload);
@@ -122,7 +123,6 @@ exports.updatePassword = async (req, res, next) => {
             message: { message: 'Atualização realizada com sucesso' }
         });
     } catch (error) {
-        console.log(error);
         res.status(404).send({ error: 'Autenticação falhou' });
     }
 }
@@ -178,7 +178,6 @@ exports.postImg = async (req, res, next) => {
         return res.status(200).send(data);
 
     } catch (error) {
-        console.log(error);
         return res.status(401).send(error);
     }
 }

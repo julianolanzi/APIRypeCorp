@@ -5,7 +5,7 @@ exports.create = async (data) => {
 
     data = {
         ...data,
-        url: '',
+        url: data.url,
         profileImage: '',
     }
     var user = new Users(data);
@@ -46,6 +46,9 @@ exports.updateUser = async (id, data) => {
             birthday: data.birthday,
             roles: data.roles,
             verify: data.verify,
+            instagram: data.instagram,
+            discord: data.discord,
+            idGame: data.idGame,
         },
     }, { new: true });
     return user;

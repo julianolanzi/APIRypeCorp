@@ -11,6 +11,8 @@ const indexRoute = require('./app/routes/index.routes');
 const usersRoute = require('./app/routes/users.routes');
 const authRoute = require('./app/routes/auth.routes');
 const teams = require('./app/routes/teams.routes');
+const line = require('./app/routes/line.routes');
+
 
 app.use(bodyParser.json({
     limit: '5mb'
@@ -35,6 +37,8 @@ app.use('/', indexRoute);
 app.use('/users', usersRoute);
 app.use('/auth', authRoute);
 app.use('/teams', teams);
+app.use('/line', line);
+
 
 
 module.exports = app;

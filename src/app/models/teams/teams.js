@@ -1,10 +1,6 @@
 const mongoose = require('../../database/DataBaseConnection');
 
 const TeamsSchema = new mongoose.Schema({
-    teamName: {
-        type: String,
-        required: true,
-    },
     tagName: {
         type: String,
         required: true,
@@ -24,6 +20,31 @@ const TeamsSchema = new mongoose.Schema({
     },
     name: {
         type: String,
+        require: true,
+    },
+    instagramTeam: {
+        type: String,
+        require: false,
+    },
+    discordTeam: {
+        type: String,
+        require: false,
+    },
+    emailTeam: {
+        type: String,
+        require: false,
+    },
+    facebookTeam: {
+        type: String,
+        require: false,
+    },
+    private: {
+        type: Boolean,
+        required: true,
+        default: false,
+    },
+    youtubeTeam: {
+        type: String,
         require: false,
     },
     url: {
@@ -41,6 +62,10 @@ const TeamsSchema = new mongoose.Schema({
     members: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Users',
+    }],
+    lines: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Line',
     }],
     adminMembers: [{
         type: mongoose.Schema.Types.ObjectId,

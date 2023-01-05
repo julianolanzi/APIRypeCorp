@@ -2,7 +2,7 @@ const mongoose = require('../../database/DataBaseConnection');
 const bcrypt = require('bcryptjs');
 
 const UsersSchema = new mongoose.Schema({
-    IdPLayer: {
+    idGame: {
         type: String,
         required: false,
     },
@@ -67,6 +67,18 @@ const UsersSchema = new mongoose.Schema({
         type: String,
         require: false,
     },
+    discord: {
+        type: String,
+        required: false
+    },
+    instagram: {
+        type: String,
+        required: false
+    },
+    line: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Lines',
+    }],
     url: {
         type: String,
         required: false
