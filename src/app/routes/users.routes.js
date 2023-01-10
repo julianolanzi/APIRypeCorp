@@ -10,6 +10,8 @@ const controller = require('../controllers/user-controller');
 
 router.get('/', middlewares.isAdmin, controller.get);
 router.get('/:id', middlewares.verifyToken, controller.getById);
+router.get('/userkey/:key', middlewares.isAdminTeam, controller.getUsersKey);
+
 
 router.post('/', controller.post);
 router.post('/img/:id', middlewares.verifyToken, multer(multerConfig).single('file'), controller.postImg);

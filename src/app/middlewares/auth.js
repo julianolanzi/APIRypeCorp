@@ -100,25 +100,25 @@ exports.isAdminTeam = function (req, res, next) {
         if (err)
             return res.status(401).send({ error: 'Token invalid' });
 
-        const AdmTeam = req.body.admin;
-        const user = await teamService.getByAdminTeam(AdmTeam);
-        if (user == true) {
+        const user = decoded;
+       
+        if (user.roles == 'admin') {
+            req.userId = decoded.id;
             return next();
         }
         const data = jwt.decode(token);
 
-        const isAdminGroup = await teamService.getByGroupAdminTeam(data.id);
-        console.log(data.id);
-        if (isAdminGroup == true) {
+        const id = decoded.id
+        const permission = await teamService.findUserTeam(id);
+        if (permission.role == 'admin') {
             return next();
         }
 
-        let isAdmin = data.user.roles;
-        if (isAdmin == 'admin') {
+        if (permission.role == 'sub-admin') {
             return next();
         } else {
             return res.status(403).json({
-                message: 'Voce precisa ser admin do time para realizar mudanças'
+                error: 'Voce precisa ser admin do time para realizar mudanças'
             });
         }
 

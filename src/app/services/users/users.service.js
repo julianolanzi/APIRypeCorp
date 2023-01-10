@@ -27,10 +27,7 @@ exports.get = async () => {
 };
 
 exports.getByid = async (id) => {
- 
     const user = await Users.findById(id).populate(['team']);
-
-    
     return user;
 };
 
@@ -98,4 +95,20 @@ exports.deleteImg = async (id) => {
     }, { new: true });
 
     return user;
+}
+
+exports.getSearchKey = async (key) => {
+
+    let data = await Users.find({
+        $or: [
+            { name: { $regex: key } },
+            { email: { $regex: key } },
+            { nickname: { $regex: key } }
+        ]
+    }).populate(['team']);
+    if (data.length < 0) {
+        let message = 'Nenhum usuário encontrado com esse nome'
+        return message;
+    }
+    return data;
 }

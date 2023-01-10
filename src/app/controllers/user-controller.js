@@ -16,6 +16,22 @@ exports.get = async (req, res, next) => {
     }
 }
 
+exports.getUsersKey = async (req, res, next) => {
+    try {
+        let key = req.params.key;
+
+        const data = await userService.getSearchKey(key);
+        if (data.length == 0) {
+            return res.status(400).send({ error: 'Nenhum usuário encontrado 🥺' });
+        }
+
+        return res.status(200).send(data);
+    } catch (error) {
+        console.log(error);
+        return res.status(400).send({ error: 'Erro na chamada' });
+    }
+}
+
 exports.post = async (req, res, next) => {
 
     const { email, cpf } = req.body;

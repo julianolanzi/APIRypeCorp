@@ -3,6 +3,12 @@ const bcrypt = require('bcryptjs');
 
 exports.login = async (email) => {
     const user = await Users.findOne({ email }).select('+password');
+    const lastLogin = await Users.findByIdAndUpdate(user.id, {
+        '$set': {
+            lastLogin: Date.now(),
+        }
+       
+    });
     return user;
 };
 

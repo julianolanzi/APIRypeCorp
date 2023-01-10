@@ -1,5 +1,6 @@
 const teamService = require('../services/teams/teams.service');
 const imgService = require('../services/imgs/img.service');
+const userService = require('../services/users/users.service');
 
 exports.get = async (req, res, next) => {
     try {
@@ -25,26 +26,6 @@ exports.getById = async (req, res, next) => {
 
 }
 
-exports.getByIdUser = async (req, res, next) => {
-
-    try {
-        const data = await teamService.getByUserId(req.params.id);
-
-        if (!data) {
-            return res.status(404).send({ error: 'Usuário não pertence a nenhum time' });
-        }
-
-        const dataTeam = await teamService.getById(data.id);
-
-
-        return res.status(200).send({ data, dataTeam });
-    } catch (error) {
-        console.log(error);
-        return res.status(400).send({ error: 'Time não encontrado' });
-    }
-
-}
-
 exports.getTeamsKey = async (req, res, next) => {
     try {
         let key = req.params.key;
@@ -59,20 +40,27 @@ exports.getTeamsKey = async (req, res, next) => {
     }
 }
 
-exports.joinTeamPublic = async (req, res, next) => {
+exports.getUserTeam = async (req, res, next) => {
     try {
-        const data = req.body;
-        let id = data.user;
-        let team = data.team;
 
+        const id = req.params.id
 
-        const user = await teamService.updateTeamUser(id, team);
+        const user = await teamService.findUserTeam(id);
 
-        const datateam = await teamService.updateTeamMember(team, id);
+        if (!user) {
+            return res.status(404).send({ error: 'Usuário não pertence a nenhum time' });
+        }
+        const team = await teamService.getById(user.id);
 
-        return res.status(200).send({ message: 'Entrou no time com sucesso' });
+        const data = {
+            data: user,
+            dataTeam: team,
+        }
+
+        return res.status(200).send(data);
     } catch (error) {
-        return res.status(400).send({ error: 'Erro na chamada' });
+        console.log(error);
+        return res.status(401).send({ error: error });
     }
 }
 
@@ -80,23 +68,47 @@ exports.post = async (req, res, next) => {
 
     try {
         const payload = req.body;
-        const user = await teamService.getByAdminTeam(payload.admin);
+        const userid = req.userId;
 
-        if (user == true) {
-            return res.status(400).send({ error: 'Usuário já é admin de outro clan' });
+        const userteam = await teamService.findUserTeam(userid);
+
+        if (userteam) {
+            return res.status(404).send({ error: 'Usuário já participa de outro time' });
         }
-        const members = await teamService.getByUserTeam(payload.admin);
-        if (members == false) {
-            return res.status(400).send({ error: 'Usuário já possui time' });
-        }
-        const data = await teamService.create(payload);
+
+        const data = await teamService.create(payload, userid);
 
         res.status(201).send({ data, message: 'Registro do time concluido com sucesso' });
 
     } catch (error) {
+        console.log(error);
         return res.status(400).send({ error: 'registro de clan falhou verifique os erros e tente novamente' });
     }
 
+}
+
+exports.joinPublicTeam = async (req, res, next) => {
+    try {
+        const user = req.userId;
+        const team = req.body.team;
+
+        const Userteam = await teamService.findUserTeam(user);
+
+        if (Userteam) {
+            return res.status(401).send({ error: 'Usuário já pertence a outro time' });
+        }
+
+        if (!Userteam) {
+            const data = teamService.joinPublicTeam(user, team);
+
+            return res.status(200).send(data);
+        }
+
+
+    } catch (error) {
+        console.log(error);
+        return res.status(401).send({ error: error });
+    }
 }
 
 exports.putInfoTeam = async (req, res, next) => {
@@ -139,105 +151,6 @@ exports.delete = async (req, res, next) => {
         return res.status(200).send({ message: 'Time deletado com sucesso' });
     } catch (error) {
         res.status(404).send({ error: 'Team not deleted' });
-    }
-}
-
-exports.updateMemberTeam = async (req, res, next) => {
-
-    try {
-        const idTeam = req.params.idTaem;
-        const UserID = req.params.idMember;
-
-        const user = await teamService.getByAdminTeam(UserID);
-        if (user == true) {
-            return res.status(400).send({ error: 'úsuario já é admin de um time' });
-        }
-
-        const member = await teamService.getByUserTeam(UserID);
-
-        if (member == false) {
-            return res.status(400).send({ error: 'úsuario já é membro de outro time' });
-        }
-
-        const data = await teamService.updateTeamMember(idTeam, UserID);
-
-
-
-        return res.status(200).send({ data, message: 'Membro atualizado com sucesso' });
-    } catch (error) {
-        res.status(404).send({ error: 'Atualização falhou' });
-    }
-}
-
-exports.updateAdminTeam = async (req, res, next) => {
-
-    try {
-        const idTeam = req.params.idTaem;
-        const UserID = req.params.idMember;
-
-        const user = await teamService.getByAdminTeam(UserID);
-
-        if (user == true) {
-            return res.status(400).send({ error: 'úsuario já é admin de outro time' });
-        }
-
-        const member = await teamService.getByGroupAdminTeam(UserID);
-
-        if (member == true) {
-            return res.status(400).send({ error: 'úsuario já pertence a administração de outro time' });
-        }
-
-        const data = await teamService.updateAdminMember(idTeam, UserID);
-
-
-
-        return res.status(200).send({ data, message: 'admin atualizado com sucesso' });
-    } catch (error) {
-        res.status(404).send({ error: 'Falha na atualização de time' });
-    }
-}
-
-exports.deleteMemberTeam = async (req, res, next) => {
-
-    try {
-        const idTeam = req.params.idTaem;
-        const UserID = req.params.idMember;
-
-        const member = await teamService.getByUserTeam(UserID);
-
-        if (member == true) {
-            return res.status(400).send({ error: 'Usuário nao encontrado' });
-        }
-
-        const data = await teamService.deleteTeamMember(idTeam, UserID);
-
-
-
-        return res.status(200).send({ data, message: 'Membro removido com sucesso' });
-    } catch (error) {
-        res.status(404).send({ error: 'atualização do time falhou' });
-    }
-}
-
-exports.deleteAdminTeam = async (req, res, next) => {
-
-    try {
-        const idTeam = req.params.idTaem;
-        const UserID = req.params.idMember;
-
-        const member = await teamService.getByAdminTeam(UserID);
-
-        if (member == true) {
-            return res.status(400).send({ error: 'úsuario não encontrado' });
-        }
-
-        const data = await teamService.deleteTeamAdmin(idTeam, UserID);
-
-
-
-        return res.status(200).send({ data, message: 'Atualização realizada com sucesso' });
-    } catch (error) {
-        res.status(404).send({ error: 'falha na atualização' });
     }
 }
 
@@ -297,24 +210,141 @@ exports.quitTeam = async (req, res, next) => {
         const idTeam = req.params.id;
         const idUser = req.userId;
 
-        const typeuser = await teamService.getByUserId(idUser);
+        const datauser = await teamService.findUserTeam(idUser);
 
-        if (!typeuser) {
-            return res.status(404).send({ data: 'Usuário não pertence a nenhum time' });
+        if (datauser) {
+            if (datauser.role == 'sub-admin') {
+
+                const team = await teamService.quitTeam(idTeam, idUser, datauser);
+                return res.status(200).send({ error: 'Membro removido com sucesso.' });
+            }
+            if (datauser.role == 'member') {
+                const team = await teamService.quitTeam(idTeam, idUser, datauser);
+
+                return res.status(200).send({ error: 'Membro removido com sucesso.' });
+            }
+
+        } else {
+            return res.status(404).send({ error: 'Usuário não pertence a nenhum time' });
         }
 
-        if (typeuser.role == 'member') {
-            const member = await teamService.deleteTeamMember(idTeam, idUser);
-        }
-
-        if (typeuser.role == 'sub-admin') {
-            const subAdmin = await teamService.deleteTeamAdmin(idTeam, idUser);
-        }
-
-        const user = await teamService.quitTeamMember(idUser, idTeam);
-
-        return res.status(200).send({ data: 'Time removido com sucesso.' });
     } catch (error) {
         return res.status(401).send({ error: error });
     }
 }
+
+exports.updateAdminMember = async (req, res, next) => {
+    try {
+        const team = req.params.id;
+        const userMember = req.body.member;
+
+        const user = await teamService.findUserTeam(userMember);
+        // const userID = await userService.getByid(userID);
+
+        if (user) {
+
+            if (user.id == team) {
+
+                if (user.role == 'member') {
+                    const data = await teamService.putAdminMember(team, userMember);
+                    return data
+                }
+                if (user.role == 'sub-admin') {
+                    return res.status(401).send({ error: 'Usuário já é admin do time' });
+                }
+
+            } else {
+                return res.status(401).send({ error: 'Usuário pertence a outro time' });
+            }
+        }
+
+        if (!user) {
+            const data = await teamService.putAdminMember(team, userMember);
+            return res.status(200).send({ data, message: 'Usuário atribuido como adm, com sucesso.' });
+        }
+
+
+    } catch (error) {
+        return res.status(401).send({ error: error });
+    }
+}
+
+exports.deleteMember = async (req, res, next) => {
+    try {
+        const idTeam = req.params.id;
+        const user = req.body.member;
+        const datauser = await teamService.findUserTeam(user);
+
+        if (datauser) {
+            if (datauser.role == 'sub-admin') {
+
+                const team = await teamService.quitTeam(idTeam, user, datauser);
+                return res.status(200).send({ data: 'Membro removido com sucesso.' });
+            }
+            if (datauser.role == 'member') {
+                const team = await teamService.quitTeam(idTeam, user, datauser);
+
+                return res.status(200).send({ data: 'Membro removido com sucesso.' });
+            }
+
+        } else {
+            return res.status(404).send({ error: 'Usuário não pertence a nenhum time' });
+        }
+
+
+    } catch (error) {
+        return res.status(401).send({ error: error });
+    }
+}
+
+exports.updateRoleMember = async (req, res, next) => {
+    
+    try {
+
+        const idTeam = req.params.id;
+        const user = req.body.member;
+        const datauser = await teamService.findUserTeam(user);
+       if(datauser){
+        if (datauser.role == 'sub-admin') {
+            const team = await teamService.quitTeam(idTeam, user, datauser);
+            const exit = await teamService.putMember(idTeam, user);
+            return res.status(200).send({ data: 'Membro promovido a membro com sucesso.' });
+        }
+        if (datauser.role == 'member') {
+            const team = await teamService.putAdminMember(idTeam, user);
+            const exit = await teamService.quitTeam(idTeam, user, datauser);
+            return res.status(200).send({ data: 'Membro Promovido a adm com sucesso.' });
+        }
+       }else{
+        return res.status(404).send({ error: 'Usuário não pertence a nenhum time' });
+       }
+
+    } catch (error) {
+        return res.status(401).send({ error: error });
+    }
+}
+
+
+exports.updateMemberTeam = async (req, res, next) => {
+    try {
+        const team = req.params.id;
+        const userMember = req.body.member;
+
+        const user = await teamService.findUserTeam(userMember);
+        // const userID = await userService.getByid(userID);
+
+        if (user) {
+            return res.status(401).send({ error: 'Usuário pertence a outro time' });
+        }
+
+        if (!user) {
+            const data = await teamService.putMemberTeam(team, userMember);
+            return res.status(200).send({ data, message: 'Usuário adicionado com sucesso.' });
+        }
+
+
+    } catch (error) {
+        return res.status(401).send({ error: error });
+    }
+}
+
